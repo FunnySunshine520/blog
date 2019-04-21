@@ -1,5 +1,10 @@
 <?php
-
+//$config = config('customerFields');
+//print_r($config);
+//
+//
+//
+//die;
 $fields = [
     [
         'id',
@@ -115,7 +120,7 @@ $chart_lists = [
 ];
 
 
-print_r(json_encode($chart_lists));
+print_r(json_encode($detail));
 die;
 
 
