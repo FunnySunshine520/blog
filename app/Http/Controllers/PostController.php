@@ -16,12 +16,14 @@ class PostController extends Controller
             'full_name' => '张超是个大傻逼',
             'xingbie' => '男',
         ];
-        echo 123;
+//        echo 123;
         return ['code' => -1, 'msg' => 'ID必传', 'data' => $data];
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        echo 234;
+        $id = $request->post('key', 1);
+        
+        return $id;
     }
 }
