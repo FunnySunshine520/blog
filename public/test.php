@@ -82,7 +82,7 @@ $datas = [
 ];
 
 $detail = [
-    [
+    '*' => [
         'id',
         'name',
         'full_name',
@@ -90,16 +90,28 @@ $detail = [
         'logo',
         'website',
         'industry',
+        'com_main_tags',
+        'com_tags',
+        'com_operation_tags',
+        'finance_phase',
+        'operation_status',
+        'scale',
+        'start_date',
         'address',
+        'address1',
+        'address2',
+        'telephone',
+        'email',
         'com_products' => [
-            [
+            '*' => [
                 'id',
                 'name',
-                'url'
+                'is_main',
+                'android',
+                'weixin'
             ]
         ]
-    ]
-
+    ],
 ];
 
 

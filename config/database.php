@@ -58,7 +58,17 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]),
         ],
-
+        'sale_interface' => [
+            'driver' => 'mysql',
+            'host' => env('DB_SALE_INTERFACE_HOST'),
+            'database' => env('DB_SALE_INTERFACE_DATABASE'),
+            'username' => env('DB_SALE_INTERFACE_USERNAME'),
+            'password' => env('DB_SALE_INTERFACE_PASSWORD'),
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+        ],
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
