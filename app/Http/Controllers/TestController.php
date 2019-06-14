@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use DB;
 
 
@@ -365,7 +366,6 @@ class TestController
                 'response' => [
                     '*' => [
                         'id',
-                        'org_id',
                         'name',
                         'position',
                         'intro'
@@ -779,10 +779,108 @@ class TestController
             ],
         ],
     ];
-    //
+    protected $testFields = [
+        '/x/api/enterprise/' => [
+            'detail' => [
+                'type' => '2',
+                'params' => [
+                    'id' => 10,
+                    'token' => '2p0iDwbFcen1sA587EfbZkIjPj2uFliJ'
+                ],
+                'paramsForOnline' => [
+                    'id' => 10,
+                    'token' => 'NcyJ1t1KCqF5w0BOvcvHpZ6e1MXFGYwb'
+                ],
+                'response' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'full_name',
+                        'remark_name',
+                        'logo',
+                        'website',
+                        'industry',
+                        'brief',
+                        'com_main_tags',
+                        'com_tags',
+                        'com_operation_tags',
+                        'finance_phase',
+                        'operation_status',
+                        'scale',
+                        'start_date',
+                        'address',
+                        'address1',
+                        'address2',
+                        'address3',
+                        'telephone',
+                        'email',
+                        'weixin',
+                        'com_products',
+                    ],
+                ]
+
+            ],
+            'member-list' => [
+                'type' => '2',
+                'params' => [
+                    'id' => 7,
+//                'token' => '2p0iDwbFcen1sA587EfbZkIjPj2uFliJ',
+                    'token' => 'ScWu6rOieXRBJcNo2qEChygNqCwjyYgc'
+                ],
+                'paramsForOnline' => [
+                    'id' => 7,
+                    'token' => 'NcyJ1t1KCqF5w0BOvcvHpZ6e1MXFGYwb'
+                ],
+                'response' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'avatar',
+                        'position',
+                    ]
+                ],
+            ],
+            'chart-list' => [
+                'type' => '1',
+                'params' => [
+                    'id' => 1123,
+                    'token' => '2p0iDwbFcen1sA587EfbZkIjPj2uFliJ'
+                ],
+                'paramsForOnline' => [
+                    'id' => 1123,
+                    'token' => 'NcyJ1t1KCqF5w0BOvcvHpZ6e1MXFGYwb'
+                ],
+                'response' => [
+
+                    'com_news_index' => [
+                        'y' => [
+                            'type',
+                            'list'
+                        ]
+                    ],
+                    'com_search_index' => [
+                        'x',
+                        'y' => [
+                            'type',
+                        ]
+                    ],
+                    'com_weixin_index',
+                    'com_appstore_rank',
+                    'com_alexa_rank',
+                    'com_android_download' => [
+                        'x',
+                        'y'
+                    ],
+                    'com_hot_score',
+                    'com_hot_trend'
+                ],
+            ],
+        ]
+    ];
+
     public function getJson()
     {
-        $config = $this->customerFields;
+        $config = $this->testFields;
         foreach ($config as $url => $urlarr) {
             foreach ($urlarr as $suburl => $value) {
                 $devtoken = $value['params']['token'];
@@ -796,19 +894,136 @@ class TestController
                 $url = ltrim($url, '.');
 
                 $update_url = $url.$suburl;
+                $su_id = 0;
+                switch ($devtoken)
+                {
+                    case '2p0iDwbFcen1sA587EfbZkIjPj2uFliJ':
+                        $su_id = 1;
+                        break;
+                    case 'ScWu6rOieXRBJcNo2qEChygNqCwjyYgc':
+                        $su_id = 4;
+                        break;
+                }
 
-                $result = "{$update_url}  --  {$devtoken}\n{$params}\n\n";
-                print_r($result);
+                //if (in_array($update_url, $config_url)) {
+                    $result = "{$update_url}  --  {$devtoken}\n{$params}\n\n";
+                    print_r($result);
 
-                \Illuminate\Support\Facades\DB::connection('sale_interface')->table('sale_user_url')
-                    ->where('su_id', '1')
-                    ->where('url', $update_url)
-                    ->update(['customer_fields' => $params]);
+//                    \Illuminate\Support\Facades\DB::connection('sale_interface')->table('sale_user_url')
+//                        ->where('su_id', $su_id)
+//                        ->where('url', $update_url)
+//                        ->update(['customer_fields' => $params]);
+                //}
             }
 
         }
     }
 
+    public function test()
+    {
+        echo 123;
+    }
+
+    /**
+     * json数据生成表格
+     */
+    public function getUpdateTotal1()
+    {
+        $json_string = file_get_contents(__DIR__.'/CompanyUpdateTotal.json');
+        $json_arr = json_decode($json_string);
+        $filename='orderexcel';
+        header("Content-type: application/vnd.ms-excel; charset=gbk");
+        header("Content-Disposition: attachment; filename=$filename.xls");
+        //$list为数据库查询结果，既二维数组。利用循环出表格，直接输出，既在线生成execl文件
+        $data='<table border=\'1\'><tr><th>修改次数</th><th>公司id</th><th>数据：</th>
+            <th>value(修改后的值)</th><th>source</th><th>checked</th><th>index</th><th>uuid</th><th>时间：</th></tr>';
+        $count = 0;
+        foreach($json_arr as $key => $val)
+        {
+            $count++;
+            $content = json_decode($val->data);
+//            dump($data);
+            foreach ($content as $name => $value) {
+                $str_value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                $str_value = is_string($str_value) ? $str_value : $val->end_at. '这个不是string';
+                $str_count = is_string($count) ? $count : strval($count);
+                $str_data_value = is_string($value->value) ? $value->value : json_encode($value->value);
+                $str_data_index = isset($value->index) ? (is_string($value->index) ? $value->index : '') : '';
+
+                $data .= "<tr><td>";
+                $data .= '修改次数'. $str_count;
+                $data .= "</td><td>";
+                $data .= $val->cid."</td><td>";
+//                dump($val->cid);
+//                $data .= $str_value."</td><td>";
+                $data .= $value->field."</td><td>". $str_data_value."</td><td>". $value->source."</td><td>";
+                $data .= $value->checked ."</td><td>". $str_data_index."</td><td>". $value->uuid."</td><td>";
+                $data .= $val->end_at."</td></tr>";
+            }
+//            dump($val);
+//            $data .= "<table border='1'>";
+//            $data .= "<tr><td>公司id：".$val->cid."</td><td>数据：".$val->data."</td><td>时间：".$val->end_at."</td></tr>";
+//            $data .= "</table>";
+//            $data .= "<br>";
+
+        }
+//        $data.='</table>';
+//        if (EC_CHARSET != 'gbk')
+//        {
+//            echo yzy_iconv(EC_CHARSET, 'gbk', $data) . "\t";
+//        }
+//        else
+//        {
+        echo $data. "\t";
+//        }
+//        print_r($json_arr);
+//        $startDate = '2018-05-01';
+//        $endDate = '2018-05-31';
+//
+//        if (empty($startDate)) {
+//            $startDate = date('Y-m-d', strtotime('-1 day'));
+//        } else {
+//            $startDate = date('Y-m-d', strtotime($startDate));
+//        }
+//
+//        if (empty($endDate)) {
+//            $endDate = date('Y-m-d', time());
+//        } else {
+//            $endDate = date('Y-m-d', strtotime($endDate));
+//        }
+//
+//        $putin = [];
+//        $count = 0;
+//
+//        $state_dates = [];
+//        for ($tpStartDate = strtotime($startDate); $tpStartDate < strtotime($endDate); $tpStartDate += 86400) {
+//            $tpEndDate = $tpStartDate + 86400;
+//            $count++;
+//            $start_tmp = date('Y-m-d', $tpStartDate);
+//            $end_tmp = date('Y-m-d', $tpEndDate);
+////            dump($start_tmp);dump($end_tmp);
+//            $query = Order::where('type', 'update')
+//                ->where('state', '2900')
+//                ->where('result', 1)
+//                ->where('end_at', '>=', $start_tmp)
+//                ->where('end_at', '<', $end_tmp)
+//                ->pluck('data', 'end_at');
+////            dump($query);
+////            if (!empty($query->toArray())) {
+////                foreach ($query as $value) {
+////                    if (isset($value->data) && !empty($value->data)) {
+////                        $value->data = json_decode($value->data, JSON_UNESCAPED_UNICODE);
+////                    }
+////
+////                }
+////            }
+//
+//
+//            $putin[] = $query;
+//        }
+//
+//        return $putin;
+    }
 
 }
 

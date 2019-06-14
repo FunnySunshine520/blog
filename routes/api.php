@@ -16,3 +16,6 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/test', ['as'=>'test.getJson','uses'=>'TestController@getJson']);
+Route::get('/re', ['as'=>'test.getJson','uses'=>'TestController@test']);
