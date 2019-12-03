@@ -1025,6 +1025,48 @@ class TestController
 //        return $putin;
     }
 
+    public function getUpdateTotal()
+    {
+        $json_string = file_get_contents(__DIR__.'/address.json');
+        $json_arr = json_decode($json_string, true);
+
+        $result = [];
+        foreach ($json_arr as $item => $value) {
+            $value['children'] = [];
+            if ($value['parent_id'] == -1) {
+                $result[] = $value;
+            } else {
+                $result = $this->findParent($value, $result);
+//                foreach ($result as $address) {
+//                    if ($value['parent_id'] == $address['id']) {
+//                        $result[$item]['children'][] = $value;
+//                        break;
+//                    }
+//                }
+            }
+//            dump($result);
+        }
+        return $result;
+    }
+
+    public function findParent($children, $arr)
+    {
+        foreach ($arr as $item => $address) {
+            if ($children['parent_id'] == $address['id']) {
+                $arr[$item]['children'][] = $children;
+                break;
+            } else {
+                if (!empty($arr['children'])) {
+                    $res = $this->findParent($children, $arr['children']);
+                    if (!empty($res)) {
+                        $arr[$item]['children'] = $res;
+                    }
+                }
+            }
+        }
+        return $arr;
+    }
+
 }
 
 
