@@ -1,4 +1,34 @@
 <?php
+
+/**
+ * 写一个函数，输入一个数组[4, 5, 10, 7, 6, 11, 20, 3]，数组里全部是各自不相同的正整数。返回最长的值连续的子序列。
+[3, 4, 5, 6, 7] 长度为5
+[10， 11] 长度为2
+[20] 长度为1
+返回最长的[3, 4, 5, 6, 7]
+ */
+$arr = [4, 5, 10, 6, 7, 11, 20, 3];
+sort($arr);
+$arr1 = $arr;
+var_dump($arr1);
+
+$sons = [];
+$tmp = 0;
+$sons[$tmp][] = $arr1[0];
+for ($i=1; $i < count($arr1); $i++) {
+    $len = count($sons[$tmp]);
+    $a = $sons[$tmp][$len-1];
+    if ($a + 1 == $arr1[$i]) {
+        $sons[$tmp][] = $arr1[$i];
+    } else {
+        $tmp += 1;
+        $sons[$tmp][] = $arr1[$i];
+    }
+}
+var_dump($sons);
+
+var_dump('end');
+die;
 //$config = config('customerFields');
 //print_r($config);
 //
